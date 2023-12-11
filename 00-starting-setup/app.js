@@ -19,13 +19,9 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next) => {
-  User.findById(1)
-    .then(user => {
-      req.user = user;
-      next();
-    })
-    .catch(err => console.log(err));
+app.use(async (req, res, next) => {
+  const user = await User.findById('6576bef805b4904ad5ffab02');
+  req.user =  new User(user.username, user.email, user.cart, user._id);
   next();
 });
 

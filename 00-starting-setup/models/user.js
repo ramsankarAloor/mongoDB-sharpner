@@ -2,9 +2,11 @@ const mongodb = require("mongodb");
 const { getDb } = require("../util/database");
 
 class User {
-  constructor(username, email) {
+  constructor(username, email, cart, id) {
     this.username = username;
     this.email = email;
+    this.cart = cart; // {items : []}
+    this._id = id;
   }
 
   async save() {
@@ -15,6 +17,36 @@ class User {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async addToCart(product) {
+    const cartProductIndex = this.cart.items.findIndex((p) => {
+      return p.productId.toString() === product._id.toString();
+    });
+    let newQuantity = 1;
+    const cartItems = [...this.cart.items];
+
+    if (cartProductIndex >= 0) {
+      newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+      cartItems[cartProductIndex].quantity = newQuantity;
+    } else {
+      cartItems.push({
+        productId: new mongodb.ObjectId(product._id),
+        quantity: newQuantity,
+      });
+    }
+
+    const updatedCart = {
+      items: cartItems
+    };
+    const db = getDb();
+
+    return await db
+      .collection("users")
+      .updateOne(
+        { _id: new mongodb.ObjectId(this._id) },
+        { $set: { cart: updatedCart } }
+      );
   }
 
   static async findById(userId) {
