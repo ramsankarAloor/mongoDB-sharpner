@@ -10,11 +10,11 @@ class Product {
     this._id = id;
   }
 
-  save() {
+  async save() {
     const db = getDb();
     if (this._id) {
       try {
-        const updatedProduct = db.collection('products').updateOne({_id : new mongodb.ObjectId(this._id)}, {$set : this});
+        const updatedProduct = await db.collection('products').updateOne({_id : new mongodb.ObjectId(this._id)}, {$set : this});
         console.log("updated product => ", updatedProduct);
         return updatedProduct;
       } catch (error) {
@@ -22,7 +22,7 @@ class Product {
       }
     } else {
       try {
-        const insertedProduct = db.collection("products").insertOne(this);
+        const insertedProduct = await db.collection("products").insertOne(this);
         console.log("new product => ", insertedProduct);
         return insertedProduct;
       } catch (error) {
