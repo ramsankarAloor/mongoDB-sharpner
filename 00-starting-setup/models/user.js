@@ -37,7 +37,7 @@ class User {
     }
 
     const updatedCart = {
-      items: cartItems
+      items: cartItems,
     };
     const db = getDb();
 
@@ -47,6 +47,25 @@ class User {
         { _id: new mongodb.ObjectId(this._id) },
         { $set: { cart: updatedCart } }
       );
+  }
+
+  async getCart() {
+    const db = getDb();
+    const productIds = this.cart.items.map((i) => {
+      return i.productId;
+    });
+
+    const cursor = db.collection("products").find({ _id: { $in: productIds } });
+    const cartProducts = await cursor.toArray();
+
+    return cartProducts.map((p) => {
+      return {
+        ...p,
+        quantity: this.cart.items.find((i) => {
+          return i.productId.toString() === p._id.toString();
+        }).quantity,
+      };
+    });
   }
 
   static async findById(userId) {
