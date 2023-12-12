@@ -2,7 +2,7 @@ const Product = require("../models/product");
 const User = require("../models/user");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find() //in mongoose find gives the array of products directly and not the cursor
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
@@ -17,16 +17,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  // Product.findAll({ where: { id: prodId } })
-  //   .then(products => {
-  //     res.render('shop/product-detail', {
-  //       product: products[0],
-  //       pageTitle: products[0].title,
-  //       path: '/products'
-  //     });
-  //   })
-  //   .catch(err => console.log(err));
-  Product.findById(prodId)
+  Product.findById(prodId) // mongoose has inbuilt find by id, also mongoose convert string id to ObjectId on its own.
     .then((product) => {
       res.render("shop/product-detail", {
         product: product,
@@ -38,7 +29,7 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,
