@@ -102,9 +102,9 @@ class User {
       items: cartItems,
       user: {
         _id: this._id,
-        username: this.username
-      }
-    }
+        username: this.username,
+      },
+    };
     await db.collection("orders").insertOne(order);
     this.cart = { items: [] }; // emptying cart, in the user object
 
@@ -114,6 +114,15 @@ class User {
         { _id: new mongodb.ObjectId(this._id) },
         { $set: { cart: { items: [] } } }
       ); //emptying cart in the database
+  }
+
+  async getOrders() {
+    const db = getDb();
+    const orders = await db
+      .collection("orders")
+      .find({ "user._id": new mongodb.ObjectId(this._id) })
+      .toArray();
+    return orders;
   }
 }
 
