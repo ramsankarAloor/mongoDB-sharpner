@@ -88,11 +88,23 @@ class User {
       const user = await db
         .collection("users")
         .findOne({ _id: new mongodb.ObjectId(userId) });
-      console.log("user found => ", user);
       return user;
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async addOrder() {
+    const db = getDb();
+    const order = await db.collection("orders").insertOne(this.cart);
+    this.cart = { items: [] }; // emptying cart, in the user object
+
+    return db
+      .collection("users")
+      .updateOne(
+        { _id: new mongodb.ObjectId(this._id) },
+        { $set: { cart: { items: [] } } }
+      ); //emptying cart in the database
   }
 }
 
