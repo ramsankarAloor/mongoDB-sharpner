@@ -15,7 +15,6 @@ class Product {
     if (this._id) {
       try {
         const updatedProduct = await db.collection('products').updateOne({_id : new mongodb.ObjectId(this._id)}, {$set : this});
-        console.log("updated product => ", updatedProduct);
         return updatedProduct;
       } catch (error) {
         console.log(error);
@@ -23,7 +22,6 @@ class Product {
     } else {
       try {
         const insertedProduct = await db.collection("products").insertOne(this);
-        console.log("new product => ", insertedProduct);
         return insertedProduct;
       } catch (error) {
         console.log(error);
@@ -36,7 +34,6 @@ class Product {
     try {
       const cursor = db.collection("products").find();
       const products = await cursor.toArray();
-      console.log("products ==> ", products);
       return products;
     } catch (error) {
       console.log(error);
@@ -50,7 +47,6 @@ class Product {
         .collection("products")
         .find({ _id: new mongodb.ObjectId(productId) });
       const product = await cursor.next();
-      console.log("product by id ==> ", product);
       return product;
     } catch (error) {
       console.log(error);

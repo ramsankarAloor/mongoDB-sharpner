@@ -20,6 +20,7 @@ class User {
   }
 
   async addToCart(product) {
+    console.log(this);
     const cartProductIndex = this.cart.items.findIndex((p) => {
       return p.productId.toString() === product._id.toString();
     });
@@ -96,7 +97,15 @@ class User {
 
   async addOrder() {
     const db = getDb();
-    const order = await db.collection("orders").insertOne(this.cart);
+    const cartItems = await this.getCart();
+    const order = {
+      items: cartItems,
+      user: {
+        _id: this._id,
+        username: this.username
+      }
+    }
+    await db.collection("orders").insertOne(order);
     this.cart = { items: [] }; // emptying cart, in the user object
 
     return db
