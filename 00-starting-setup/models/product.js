@@ -1,27 +1,32 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const productSchema = new Schema({
   title: {
     type: String,
-    required:true 
+    required: true,
   },
   price: {
     type: Number,
-    required: true 
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   imageUrl: {
     type: String,
-    required: true 
-  }
-})
+    required: true,
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+});
 // this  product schema is a blueprint, we need to export a model of name 'Product' from this.
 
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model("Product", productSchema);
 
 // mongoose takes the name Product, and make it products and make a collection with name products.
 
