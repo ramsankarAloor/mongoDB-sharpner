@@ -3,6 +3,8 @@ const User = require("../models/user");
 
 exports.getProducts = (req, res, next) => {
   Product.find() //in mongoose find gives the array of products directly and not the cursor
+    // .select("title description -_id") // to select which fields we only want to show
+    // .populate("userId", "username") // to populate the userId field, that is taking all user data, the second argument means we only want to take the username from the user data.
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
@@ -59,7 +61,7 @@ exports.postCart = async (req, res, next) => {
   const prodId = req.body.productId;
   const product = await Product.findById(prodId);
   await req.user.addToCart(product);
-  res.redirect('/cart');
+  res.redirect("/cart");
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -73,7 +75,8 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  req.user.addOrder()
+  req.user
+    .addOrder()
     .then((result) => {
       res.redirect("/orders");
     })
