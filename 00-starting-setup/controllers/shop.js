@@ -1,5 +1,5 @@
 const Product = require("../models/product");
-const User = require("../models/user");
+const Order = require("../models/orders");
 
 exports.getProducts = (req, res, next) => {
   Product.find() //in mongoose find gives the array of products directly and not the cursor
@@ -46,9 +46,9 @@ exports.getIndex = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
   req.user
-    .populate('cart.items.productId') 
+    .populate("cart.items.productId")
     .then((user) => {
-      const products = user.cart.items
+      const products = user.cart.items;
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
@@ -77,7 +77,21 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 exports.postOrder = (req, res, next) => {
   req.user
-    .addOrder()
+    .populate("cart.items.productId")
+    .then((user) => {
+      const products = user.cart.items.map((i) => {
+        return { quantity: i.quantity, product: { ...i.productId } };
+      });
+      const order = new Order({
+        user: {
+          username: req.user.username,
+          userId: req.user._id,
+        },
+        products: products,
+      });
+
+      return order.save();
+    })
     .then((result) => {
       res.redirect("/orders");
     })
